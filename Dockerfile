@@ -1,30 +1,25 @@
-# Etapa 1: Build
+# Etapa de build
 FROM node:20-alpine AS builder
 
-# Diretório de trabalho
 WORKDIR /app
 
-# Copia os arquivos de dependência
-COPY package.json package-lock.json* pnpm-lock.yaml* ./
-COPY . .
+# Instala pnpm
+RUN npm install -g pnpm
+
+COPY package.json pnpm-lock.yaml ./
 
 # Instala dependências
-RUN npm install
+RUN pnpm install
 
-# Gera o build de produção
-RUN npm run build
+COPY . .
 
-# Etapa 2: Runtime
-FROM node:20-alpine
+# Builda o projeto
+RUN pnpm run build
 
-# Diretório da aplicação
-WORKDIR /app
+# Etapa de produção
+FROM nginx:alpine
 
-# Copia arquivos do build
-COPY --from=builder /app ./
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expõe a porta padrão do Next.js
-EXPOSE 3000
-
-# Comando para iniciar o servidor
-CMD ["npm", "start"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
