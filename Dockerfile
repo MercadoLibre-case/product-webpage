@@ -1,25 +1,26 @@
 # Etapa de build
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Instala pnpm
-RUN npm install -g pnpm
-
-COPY package.json pnpm-lock.yaml ./
-
-# Instala dependências
-RUN pnpm install
+COPY package.json pnpm-lock.yaml* ./
+RUN npm install -g pnpm && pnpm install
 
 COPY . .
 
-# Builda o projeto
-RUN pnpm run build
+RUN pnpm build
 
-# Etapa de produção
-FROM nginx:alpine
+# Etapa final: apenas com arquivos prontos
+FROM node:22-alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/next.config.js ./
+
+EXPOSE 3000
+
+CMD ["pnpm", "start"]
