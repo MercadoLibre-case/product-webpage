@@ -14,13 +14,15 @@ import ProductSpecs from "@/modules/product/components/ProductSpecs";
 export default async function ItemDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
+
   const [product, seller, related, reviewData] = await Promise.all([
-    fetchProductById(params.id),
-    fetchSellerByProduct(params.id),
-    fetchRelatedProducts(params.id),
-    fetchReviewsByProduct(params.id),
+    fetchProductById(id),
+    fetchSellerByProduct(id),
+    fetchRelatedProducts(id),
+    fetchReviewsByProduct(id),
   ]);
 
   const payment = await fetchPaymentMethods({
@@ -29,7 +31,6 @@ export default async function ItemDetailPage({
     currency: product.price.currency,
     category: product.category,
   });
-
   return (
     <main className="p-4 flex flex-col lg:flex-row justify-start gap-6 items-start">
       {/* Bloco imagem + info */}
