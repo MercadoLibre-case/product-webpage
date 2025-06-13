@@ -15,7 +15,7 @@ export type ProductReviewData = {
 export async function fetchReviewsByProduct(
   productId: string
 ): Promise<ProductReviewData> {
-  const res = await fetch(`http://localhost:8091/reviews/${productId}`);
+  const res = await fetch(`http://localhost:8090/reviews/${productId}`);
 
   if (res.status === 404) {
     return {

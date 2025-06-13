@@ -15,7 +15,7 @@ export interface Product {
 }
 
 export async function fetchProductById(productId: string): Promise<Product> {
-  const res = await fetch(`http://localhost:8001/products/${productId}`);
+  const res = await fetch(`http://localhost:8000/products/${productId}`);
 
   if (!res.ok) {
     throw new Error("Erro ao buscar produto");
