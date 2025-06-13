@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mercadolibre-frontend
+  labels:
+    app: mercadolibre-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mercadolibre-frontend
+  template:
+    metadata:
+      labels:
+        app: mercadolibre-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: 011706314791.dkr.ecr.ca-central-1.amazonaws.com/meli-challenge/product-web:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "3000"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      imagePullSecrets:
+        - name: ecr-secret

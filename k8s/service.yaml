@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mercadolibre-frontend
+  labels:
+    app: mercadolibre-frontend
+spec:
+  selector:
+    app: mercadolibre-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
