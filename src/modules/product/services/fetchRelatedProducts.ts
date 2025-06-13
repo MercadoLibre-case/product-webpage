@@ -1,7 +1,7 @@
 export async function fetchRelatedProducts(productId: string) {
-  const res = await fetch(
-    `http://localhost:8000/products/${productId}/related`
-  );
+  const BASE_URL = process.env.PRODUCT_URL || "http://localhost:8000";
+
+  const res = await fetch(`${BASE_URL}/products/${productId}/related`);
   if (!res.ok) throw new Error("Erro ao buscar produtos relacionados");
 
   return res.json();
