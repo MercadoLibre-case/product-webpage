@@ -26,15 +26,6 @@ spec:
             requests:
               memory: "128Mi"
               cpu: "250m"
-          env:
-            - name: NEXT_PUBLIC_PRODUCT_API_URL
-              value: "http://ms-product-service:8000"
-            - name: NEXT_PUBLIC_PAYMENT_API_URL
-              value: "http://ms-payment-service:8070"
-            - name: NEXT_PUBLIC_SELLER_API_URL
-              value: "http://ms-seller-service:8080"
-            - name: NEXT_PUBLIC_REVIEW_API_URL
-              value: "http://ms-review-service:8090"
           readinessProbe:
             httpGet:
               path: /
