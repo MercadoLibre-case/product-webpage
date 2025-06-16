@@ -1,37 +1,46 @@
-name: Build and Push Frontend to ECR
+name: Build and Deploy Frontend to EKS
 
 on:
   push:
     branches: [main]
+  repository_dispatch:
+    types: [deploy]
+  workflow_dispatch:
 
 jobs:
   deploy:
+    name: Deploy Frontend
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      AWS_REGION: ca-central-1
+      EKS_CLUSTER_NAME: mercadolibre-case
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ca-central-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         run: |
-          aws ecr get-login-password --region ca-central-1 | \
-          docker login --username AWS --password-stdin 011706314791.dkr.ecr.ca-central-1.amazonaws.com/meli-challenge/product-web
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 011706314791.dkr.ecr.$AWS_REGION.amazonaws.com/meli-challenge/product-web
 
-      - name: Build and Push Docker Image
+      - name: Build and Push Docker image
         run: |
           docker build -t product-web .
-          docker tag product-web:latest 011706314791.dkr.ecr.ca-central-1.amazonaws.com/meli-challenge/product-web:latest
-          docker push 011706314791.dkr.ecr.ca-central-1.amazonaws.com/meli-challenge/product-web
+          docker tag product-web:latest 011706314791.dkr.ecr.$AWS_REGION.amazonaws.com/meli-challenge/product-web:latest
+          docker push 011706314791.dkr.ecr.$AWS_REGION.amazonaws.com/meli-challenge/product-web:latest
 
-      - name: Configure Kubernetes credentials (kubectl)
-        run: |
-          aws eks update-kubeconfig --region ca-central-1 --name mercadolibre-case
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
 
       - name: Deploy to EKS
         run: |
