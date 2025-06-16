@@ -12,10 +12,13 @@ export type ProductReviewData = {
   reviews: Review[];
 };
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_REVIEW_API_URL || "http://localhost:8090";
+
 export async function fetchReviewsByProduct(
   productId: string
 ): Promise<ProductReviewData> {
-  const res = await fetch(`http://localhost:8090/reviews/${productId}`);
+  const res = await fetch(`${BASE_URL}/reviews/${productId}`);
 
   if (res.status === 404) {
     return {

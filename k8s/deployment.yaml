@@ -15,28 +15,37 @@ spec:
         app: product-web
     spec:
       containers:
-      - name: product-web
-        image: 011706314791.dkr.ecr.ca-central-1.amazonaws.com/meli-challenge/product-web:latest
-        ports:
-        - containerPort: 3000
-        resources:
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
-          requests:
-            memory: "128Mi"
-            cpu: "250m"
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 15
-          periodSeconds: 20
+        - name: product-web
+          image: 011706314791.dkr.ecr.ca-central-1.amazonaws.com/meli-challenge/product-web:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+          env:
+            - name: NEXT_PUBLIC_PRODUCT_API_URL
+              value: "http://ms-product-service:8000"
+            - name: NEXT_PUBLIC_PAYMENT_API_URL
+              value: "http://ms-payment-service:8070"
+            - name: NEXT_PUBLIC_SELLER_API_URL
+              value: "http://ms-seller-service:8080"
+            - name: NEXT_PUBLIC_REVIEW_API_URL
+              value: "http://ms-review-service:8090"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
       imagePullSecrets:
-      - name: ecr-secret
+        - name: ecr-secret

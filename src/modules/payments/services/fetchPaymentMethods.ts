@@ -11,16 +11,21 @@ type RequestBody = {
   category: string;
 };
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_PAYMENT_API_URL || "http://localhost:8070";
+
 export async function fetchPaymentMethods(
   data: RequestBody
 ): Promise<PaymentMethods> {
-  const res = await fetch("http://localhost:8070/payment/payment-methods", {
+  const res = await fetch(`${BASE_URL}/payment/payment-methods`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) throw new Error("Erro ao buscar métodos de pagamento");
+  if (!res.ok) {
+    throw new Error("Erro ao buscar métodos de pagamento");
+  }
 
   return res.json();
 }

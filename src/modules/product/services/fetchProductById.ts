@@ -14,9 +14,10 @@ export interface Product {
   seller_id: string;
 }
 
-export async function fetchProductById(productId: string): Promise<Product> {
-  const BASE_URL = process.env.PRODUCT_URL || 'http://localhost:8000';
+const BASE_URL =
+  process.env.NEXT_PUBLIC_PRODUCT_API_URL || "http://localhost:8070";
 
+export async function fetchProductById(productId: string): Promise<Product> {
   const res = await fetch(`${BASE_URL}/products/${productId}`);
 
   if (!res.ok) {
@@ -24,6 +25,5 @@ export async function fetchProductById(productId: string): Promise<Product> {
   }
 
   const data = await res.json();
-  console.log(data);
   return data;
 }
